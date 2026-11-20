@@ -211,15 +211,31 @@ describe("PageBuilder", () => {
   });
 
   describe("integration with the real registry and data.json", () => {
-    it("registers every block type used by data.json except the intentional `slider`", () => {
+    it("registers every block type used by the shipped data.json (contract test)", () => {
       const missing = pageData.blocks
         .map((block) => block.type)
         .filter((type) => !resolveBlock(type, blockRegistry));
-      expect(missing).toEqual(["slider"]);
+      expect(missing).toEqual([]);
     });
 
-    it("renders the full mocked CMS page without crashing", () => {
+    it("renders the full mocked CMS page without crashing or fallbacks", () => {
       render(<PageBuilder blocks={pageData.blocks} />);
+
+      expect(
+        screen.getByRole("heading", { level: 1, name: /train like a pro/i }),
+      ).toBeInTheDocument();
+      for (const region of ["Hero", "Stats", "Programs", "Pricing", "Testimonials", "FAQ", "Call to action"]) {
+        expect(screen.getByRole("region", { name: region })).toBeInTheDocument();
+      }
+      expect(screen.getByRole("article", { name: "Pro plan" })).toHaveTextContent("Most popular");
+      expect(screen.queryByTestId("block-fallback")).not.toBeInTheDocument();
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it('survives the real CMS page when it asks for an unregistered "slider"', () => {
+      const withSlider = [...pageData.blocks];
+      withSlider.splice(3, 0, { id: "blk_slider_01", type: "slider", props: { slides: [] } } as never);
+      render(<PageBuilder blocks={withSlider} />);
 
       expect(
         screen.getByRole("heading", { level: 1, name: /train like a pro/i }),

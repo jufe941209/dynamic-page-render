@@ -23,7 +23,7 @@ Unknown or broken blocks never crash the page.
 | Video of the local environment | [`docs/demo.mp4`](docs/demo.mp4) |
 
 **Beyond the brief:** a visual editor at `/editor` (block list, JSON editing, live responsive preview,
-validation, publish), a mock CMS API at `/api/page`, Atomic Design, and 76 tests.
+validation, publish), a mock CMS API at `/api/page`, Atomic Design, and 78 tests.
 
 ## Quick start
 
@@ -34,7 +34,7 @@ npm run dev                 # site:   http://localhost:3000
                             # editor: http://localhost:3000/editor
 
 # Quality gates
-npm test                    # 76 tests (Vitest + Testing Library)
+npm test                    # 78 tests (Vitest + Testing Library)
 npm run typecheck
 npm run lint
 

@@ -23,8 +23,8 @@ verified and corrected the AI's output at each step. The AI never got a vague "b
 | 7. Containerization | Production Docker image | 9 |
 | 8. Product polish | Sports re-theme, visual design and motion | 10 |
 | 9. Going beyond | CMS editor with live preview and a publish API | 11–12 |
-| 10. User feedback loop | Fix a dev-only styling bug and upgrade the editor to visual + drag & drop | 13–14 |
-| 11. Documentation | README and this log | 15 |
+| 10. User feedback loop | Fix a dev-only styling bug, upgrade the editor, clean content, triage a hydration warning | 13–15 |
+| 11. Documentation | README and this log | 16 |
 
 ---
 
@@ -254,11 +254,29 @@ and the fix came from the framework's own docs rather than from a workaround.
 **Outcome:** 76 tests passing, including drag & drop (library → layers, library → preview,
 reordering), form editing, adding items, and error-boundary recovery.
 
+### Prompt 15 — Clean content, zero validation issues, and a hydration warning
+> While testing the editor I published a messy page (duplicated sections, template text, two sliders).
+> Restore the curated content, and make the shipped page produce **zero** validation warnings. The
+> unknown-component requirement must still be proven, so move that demo out of the production data and
+> into tests and the editor. Also triage this dev overlay error: *"A tree hydrated but some attributes …
+> didn't match: `cz-shortcut-listen="true"` on `<body>`"*.
+
+**Outcome:**
+- `data.json` restored. A new contract test asserts it validates with `{ valid: true, issues: [] }`
+  and renders with no fallbacks or warnings.
+- The unknown `slider` is still covered: a test injects it into the real page, and the editor's
+  **Slider (demo)** tile adds it live (flagged as a warning, never a crash).
+- **Hydration triage:** the attribute comes from the ColorZilla browser extension, not from the app.
+  The fix is `suppressHydrationWarning` on `<body>` only, which silences attribute mismatches on that
+  single element without hiding real hydration bugs elsewhere.
+- Bonus catch: Tailwind was scanning this Markdown log and emitting a stray class mentioned in prose,
+  so docs are now excluded with `@source not "../*.md"`.
+
 ---
 
 ## Phase 11 — Documentation
 
-### Prompt 15 — README and this log
+### Prompt 16 — README and this log
 > Write a README for a reviewer who has 5 minutes: a requirements checklist linking to files, routes,
 > quick start, the editor, a flow diagram of the resilience logic, the structure, how to add a block,
 > and the design decisions with their trade-offs. Then compile this prompt log in English, in

@@ -7,12 +7,8 @@ import { validatePage } from "../validate";
 const base = { slug: "home", title: "Home", blocks: [] as unknown[] };
 
 describe("validatePage", () => {
-  it("accepts the shipped data.json (only warning: the intentional slider)", () => {
-    const result = validatePage(pageData, KNOWN_BLOCK_TYPES);
-    expect(result.valid).toBe(true);
-    expect(result.issues).toEqual([
-      expect.objectContaining({ level: "warning", blockIndex: 3, message: expect.stringContaining('"slider"') }),
-    ]);
+  it("accepts the shipped data.json with zero errors and zero warnings", () => {
+    expect(validatePage(pageData, KNOWN_BLOCK_TYPES)).toEqual({ valid: true, issues: [] });
   });
 
   it.each([null, [], "page", 1])("rejects a non-object root (%s)", (value) => {

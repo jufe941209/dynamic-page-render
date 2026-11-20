@@ -55,15 +55,6 @@
       }
     },
     {
-      "id": "blk_slider_01",
-      "type": "slider",
-      "props": {
-        "slides": [
-          { "image": "/highlights-1.jpg", "caption": "Match highlights — this block type is intentionally not implemented." }
-        ]
-      }
-    },
-    {
       "id": "blk_pricing_01",
       "type": "pricing",
       "props": {

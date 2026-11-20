@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Docs mention class names in prose; don't generate CSS from them. */
+@source not "../*.md";
+
 :root {
   --background: #07080a;
   --foreground: #f4f4f5;

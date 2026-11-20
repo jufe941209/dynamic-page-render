@@ -32,11 +32,18 @@ describe("PageEditor", () => {
   });
 
   describe("layers & validation", () => {
-    it("lists every section from data.json and flags the unknown one", () => {
+    it("lists every section from data.json, with no validation issues", () => {
       renderEditor();
       expect(sections()).toHaveLength(initialPage.blocks.length);
+      expect(screen.getByRole("region", { name: "Validation" })).toHaveTextContent(/everything looks good/i);
+    });
+
+    it('flags an unregistered "slider" added from the library, without blocking publish', () => {
+      renderEditor();
+      fireEvent.click(screen.getByRole("button", { name: "Add Slider section" }));
       expect(screen.getByRole("list", { name: "Page sections" })).toHaveTextContent("Unknown");
       expect(screen.getByRole("region", { name: "Validation" })).toHaveTextContent(/unknown type "slider"/i);
+      expect(screen.getByRole("button", { name: /^publish/i })).toBeEnabled();
     });
 
     it("starts clean, with nothing to publish", () => {
