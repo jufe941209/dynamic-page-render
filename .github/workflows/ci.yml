@@ -58,6 +58,11 @@ jobs:
             -H 'content-type: application/json' -d '{}' http://localhost:3000/api/page)
           [ "$code" = "403" ]
           echo "✓ PUT /api/page is read-only in production (403)"
+          headers=$(curl -sI http://localhost:3000/)
+          echo "$headers" | grep -qi "content-security-policy: frame-ancestors 'self'"
+          echo "$headers" | grep -qi "x-content-type-options: nosniff"
+          ! echo "$headers" | grep -qi "x-powered-by"
+          echo "✓ security headers present, X-Powered-By removed"
 
       - name: Image size
         run: docker image ls dynamic-page-renderer

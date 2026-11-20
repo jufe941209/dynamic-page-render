@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/cn";
+import { isExternalHref, safeHref } from "@/lib/security/safeHref";
 
 type ButtonVariant = "primary" | "ghost" | "dark";
 
@@ -19,17 +20,25 @@ const variants: Record<ButtonVariant, string> = {
   dark: "bg-ink-950 text-white hover:bg-ink-800 hover:shadow-[0_12px_40px_-10px_rgb(7_8_10/0.8)]",
 };
 
-/** Call-to-action rendered as a link (CMS CTAs are always navigations). */
+/**
+ * Call-to-action rendered as a link (CMS CTAs are always navigations).
+ * The href is sanitized here, once, so no organism can forget to do it.
+ */
 export function ButtonLink({
   variant = "primary",
   withArrow = false,
   pulse = false,
   className,
   children,
+  href,
   ...rest
 }: ButtonLinkProps) {
+  const safe = safeHref(href);
+
   return (
     <a
+      href={safe}
+      {...(isExternalHref(safe) ? { rel: "noopener noreferrer" } : {})}
       className={cn(
         "group inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wide",
         "transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]",

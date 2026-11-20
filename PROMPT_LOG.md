@@ -10,6 +10,25 @@ verified and corrected the AI's output at each step. The AI never got a vague "b
 
 ---
 
+## Security logic at a glance
+
+Security was a requirement in every phase, not a final pass. My rule for the AI was: **treat everything
+that comes from the CMS, the network or another window as untrusted, and prove each defense with a
+test.** Where each control was introduced:
+
+| Control | Introduced in | Proven by |
+| --- | --- | --- |
+| CMS payload typed `unknown` + `isCmsBlock` type guard | Prompt 3 | malformed-entry tests |
+| `Object.hasOwn` registry lookup (no prototype keys as components) | Prompt 5 | `toString` / `__proto__` / `constructor` tests |
+| Per-block error boundary (one bad block can't take the page down) | Prompt 5 | crash-isolation and recovery tests |
+| Non-root, minimal, multi-stage Docker image, with tests as a build gate | Prompt 9 | CI Docker job |
+| `postMessage` target origin + `event.origin`/`event.source` checks | Prompt 11 | — |
+| Publish API: dev-only, same-origin, size limit, server-side validation | Prompt 12 | `route.test.ts` (400/403/422) |
+| Allow-list link sanitizer, external `rel=noopener`, no raw HTML anywhere | Prompt 16 | `safeHref.test.tsx` (XSS payloads) |
+| Security headers (CSP `frame-ancestors`, nosniff…), no `X-Powered-By` | Prompt 16 | CI smoke test |
+
+---
+
 ## How I structured the work
 
 | Phase | Goal | Prompts |
@@ -24,7 +43,8 @@ verified and corrected the AI's output at each step. The AI never got a vague "b
 | 8. Product polish | Sports re-theme, visual design and motion | 10 |
 | 9. Going beyond | CMS editor with live preview and a publish API | 11–12 |
 | 10. User feedback loop | Fix a dev-only styling bug, upgrade the editor, clean content, triage a hydration warning | 13–15 |
-| 11. Documentation | README and this log | 16 |
+| 11. Security review | Threat-model the app and close the gaps found | 16 |
+| 12. Documentation | README and this log | 17 |
 
 ---
 
@@ -274,9 +294,42 @@ reordering), form editing, adding items, and error-boundary recovery.
 
 ---
 
-## Phase 11 — Documentation
+## Phase 11 — Security review
 
-### Prompt 16 — README and this log
+### Prompt 16 — Threat model and hardening
+> Act as an application security reviewer. Treat the CMS, the browser and other windows as untrusted.
+> 1. **Threat-model** this app (renderer, editor, preview iframe, publish API, Docker image) and list
+>    each threat with its current mitigation, or "missing".
+> 2. Close every gap you find. Prefer **allow-lists over block-lists**, and apply each control in **one
+>    central place** (e.g. an atom) so no component can forget it.
+> 3. For every fix, write a test that uses a **real attack payload**, not just the happy path.
+> 4. Grep the codebase for `dangerouslySetInnerHTML`, `eval` and `new Function` and report the count.
+> 5. Don't break the editor's same-origin iframe.
+
+**Gaps the AI found and closed:**
+- **Stored XSS via CMS links.** `href` values from the CMS were rendered as-is. React 19 blocks
+  `javascript:` URLs, but not `data:`, `vbscript:` or protocol-relative `//evil.example`. Added an
+  allow-list `safeHref` (anchors, same-site paths, `http(s)`, `mailto`, `tel`) that uses the WHATWG URL
+  parser, so obfuscations like `java\tscript:` and `JaVaScRiPt:` are normalized before the check. It's
+  applied once in the `ButtonLink` atom and in the nav. External links get `rel="noopener noreferrer"`.
+- **Missing security headers.** Added CSP `frame-ancestors 'self'` (blocks clickjacking but keeps
+  the editor's own iframe working), `X-Frame-Options`, `nosniff`, `Referrer-Policy` and
+  `Permissions-Policy`, and removed `X-Powered-By`.
+- **Verified as already safe:** CMS text is only rendered through React escaping, and the count of
+  `dangerouslySetInnerHTML`/`eval`/`new Function` is **0**. The publish API is dev-only, same-origin
+  and size-limited. The container runs as non-root.
+
+**Review notes:** I asked for the XSS tests to use real payloads (`javascript:alert(document.cookie)`,
+`data:text/html,<script>…`, `<img onerror>` in text). The CI smoke test now also asserts the headers
+on the **running container**, not just in unit tests.
+
+**Outcome:** 103 tests passing. CI verifies the headers and the read-only API against the Docker container.
+
+---
+
+## Phase 12 — Documentation
+
+### Prompt 17 — README and this log
 > Write a README for a reviewer who has 5 minutes: a requirements checklist linking to files, routes,
 > quick start, the editor, a flow diagram of the resilience logic, the structure, how to add a block,
 > and the design decisions with their trade-offs. Then compile this prompt log in English, in

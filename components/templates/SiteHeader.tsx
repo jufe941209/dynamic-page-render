@@ -1,5 +1,6 @@
 import { ButtonLink } from "@/components/atoms";
 import type { SiteConfig } from "@/lib/cms/types";
+import { safeHref } from "@/lib/security/safeHref";
 
 type SiteHeaderProps = {
   site?: SiteConfig;
@@ -33,7 +34,7 @@ export function SiteHeader({ site, showEditLink = true }: SiteHeaderProps) {
               {nav.map((link) => (
                 <li key={link.href}>
                   <a
-                    href={link.href}
+                    href={safeHref(link.href)}
                     className="relative transition-colors hover:text-white after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-brand-400 after:transition-all after:duration-300 hover:after:w-full"
                   >
                     {link.label}

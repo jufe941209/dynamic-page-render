@@ -25,7 +25,7 @@ Unknown or broken blocks never crash the page.
 | Video of the local environment | [`docs/demo.mp4`](docs/demo.mp4) |
 
 **Beyond the brief:** a visual editor at `/editor` (block list, JSON editing, live responsive preview,
-validation, publish), a mock CMS API at `/api/page`, Atomic Design, and 78 tests.
+validation, publish), a mock CMS API at `/api/page`, Atomic Design, and 103 tests.
 
 ## Quick start
 
@@ -36,7 +36,7 @@ npm run dev                 # site:   http://localhost:3000
                             # editor: http://localhost:3000/editor
 
 # Quality gates
-npm test                    # 78 tests (Vitest + Testing Library)
+npm test                    # 103 tests (Vitest + Testing Library)
 npm run typecheck
 npm run lint
 
@@ -114,6 +114,26 @@ data/data.json ─► lib/cms/getPage.ts ─► app/page.tsx ─► <PageShell> 
 3. **Crashing component:** contained by a per-block error boundary.
 4. **Prototype-safe lookup:** `Object.hasOwn` stops `"toString"` or `"__proto__"` from resolving to `Object.prototype`.
 5. **Dev vs prod:** in development an amber notice marks the broken slot. In production nothing is rendered.
+
+## Security
+
+The CMS is treated as **untrusted input**: content editors and integrations can make mistakes or be
+compromised. Each layer defends itself:
+
+| Threat | Mitigation | Where | Tested in |
+| --- | --- | --- | --- |
+| Unknown/malformed blocks crash the page (availability) | Type guard, registry lookup, per-block error boundary | `PageBuilder.tsx`, `BlockErrorBoundary.tsx` | `PageBuilder.test.tsx` |
+| Prototype keys (`__proto__`, `constructor`) resolved as components | `Object.hasOwn` own-property lookup | `registry.ts` | `PageBuilder.test.tsx` |
+| Stored XSS via CMS links (`javascript:`, `data:`, `//evil`) | Allow-list `safeHref` applied centrally in `ButtonLink` and nav, `rel="noopener noreferrer"` on external links | `lib/security/safeHref.ts` | `safeHref.test.tsx` |
+| HTML/markup injection via CMS text | React escaping only. **No `dangerouslySetInnerHTML`, `eval` or `new Function`** anywhere | all components | `safeHref.test.tsx` |
+| Unauthorized content writes | `PUT /api/page` disabled in production (403), same-origin check, 256 KB body limit, server-side validation (400/422) | `app/api/page/route.ts` | `route.test.ts`, CI |
+| Cross-window message spoofing between editor and preview | `postMessage` with explicit target origin, and `event.origin` + `event.source` checks on receive | `PageEditor.tsx`, `LivePreview.tsx` | — |
+| Clickjacking, MIME sniffing, referrer leaks | `CSP frame-ancestors 'self'`, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`. `X-Powered-By` removed. | `next.config.ts` | CI smoke test |
+| Container compromise blast radius | Multi-stage image with only runtime files, **non-root user**, healthcheck, no secrets in image (`.dockerignore` excludes `.env*`, `.git`) | `Dockerfile` | CI |
+| Editor not indexed | `robots: noindex` on `/editor` and `/preview` | `app/editor/page.tsx` | — |
+
+> **Production note:** a real CMS editor would sit behind authentication. Here, write access is
+> limited to the local development server, and the production build is read-only.
 
 ## Project structure (Atomic Design)
 
