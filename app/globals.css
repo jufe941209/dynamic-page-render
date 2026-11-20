@@ -1,0 +1,181 @@
+@import "tailwindcss";
+
+:root {
+  --background: #07080a;
+  --foreground: #f4f4f5;
+}
+
+/* ---------------------------------------------------------------------------
+ * Design tokens
+ * ------------------------------------------------------------------------- */
+@theme {
+  /* Neon lime — primary brand */
+  --color-brand-200: #efffb0;
+  --color-brand-300: #e2ff6b;
+  --color-brand-400: #d0ff2a;
+  --color-brand-500: #b8e600;
+  --color-brand-600: #8fb300;
+
+  /* Energetic orange — secondary accent */
+  --color-accent-300: #ffb380;
+  --color-accent-400: #ff8a4c;
+  --color-accent-500: #ff6a1a;
+
+  /* Ink — dark surfaces */
+  --color-ink-950: #07080a;
+  --color-ink-900: #0c0e12;
+  --color-ink-800: #14171d;
+  --color-ink-700: #1e222a;
+
+  --animate-fade-up: fade-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-float: float 14s ease-in-out infinite;
+  --animate-marquee: marquee 32s linear infinite;
+  --animate-glow: glow 2.8s ease-in-out infinite;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-oswald);
+}
+
+/* ---------------------------------------------------------------------------
+ * Keyframes (global so custom classes below can use them too)
+ * ------------------------------------------------------------------------- */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(40px, -30px, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-30px, 20px, 0) scale(0.95);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(208 255 42 / 0.45);
+  }
+  50% {
+    box-shadow: 0 0 36px 6px rgb(208 255 42 / 0.25);
+  }
+}
+
+@keyframes shine {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(48px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Base
+ * ------------------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+::selection {
+  background: #d0ff2a;
+  color: #07080a;
+}
+
+/* ---------------------------------------------------------------------------
+ * Decorative utilities
+ * ------------------------------------------------------------------------- */
+
+/* Faded grid behind the hero */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 70%);
+}
+
+/* Diagonal athletic stripes */
+.bg-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 18px,
+    rgb(7 8 10 / 0.1) 18px 36px
+  );
+}
+
+/* Animated lime → orange gradient text */
+.text-gradient {
+  background-image: linear-gradient(90deg, #e2ff6b, #d0ff2a 30%, #ff8a4c 65%, #e2ff6b);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 6s linear infinite;
+}
+
+/* Scroll-driven reveal. Zero JS; progressive enhancement where supported. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 25%;
+    }
+  }
+}
+
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "slug": "home",
+  "title": "Velocity — High-Performance Sports Club",
+  "description": "Elite coaching, world-class facilities and a community that pushes you further. Page assembled at runtime from a mocked Headless CMS response.",
+  "site": {
+    "name": "Velocity",
+    "nav": [
+      { "label": "Programs", "href": "#programs" },
+      { "label": "Membership", "href": "#pricing" },
+      { "label": "FAQ", "href": "#faq" }
+    ],
+    "footerNote": "Rendered by PageBuilder from data/data.json"
+  },
+  "blocks": [
+    {
+      "id": "blk_hero_01",
+      "type": "hero",
+      "props": {
+        "eyebrow": "Season 2027 · Registrations open",
+        "title": "Train like a pro.",
+        "highlight": "Play like a champion.",
+        "subtitle": "Elite coaches, data-driven programs and a world-class facility built for athletes who refuse to stay average.",
+        "primaryCta": { "label": "Join the club", "href": "#pricing" },
+        "secondaryCta": { "label": "Explore programs", "href": "#programs" },
+        "ticker": ["Football", "Running", "Boxing", "Strength", "Basketball", "Recovery", "Swimming", "Mobility"]
+      }
+    },
+    {
+      "id": "blk_stats_01",
+      "type": "stats",
+      "props": {
+        "items": [
+          { "value": "12K+", "label": "Active members" },
+          { "value": "40", "label": "Elite coaches" },
+          { "value": "8", "label": "Disciplines" },
+          { "value": "24/7", "label": "Facility access" }
+        ]
+      }
+    },
+    {
+      "id": "blk_programs_01",
+      "type": "featureGrid",
+      "props": {
+        "eyebrow": "Programs",
+        "title": "Built for every athlete",
+        "subtitle": "From your first 5K to your first pro contract — pick a discipline and we'll build the plan around you.",
+        "items": [
+          { "icon": "⚽", "title": "Football Academy", "description": "Technical drills, tactical sessions and weekly scrimmages led by former pros.", "tag": "All levels" },
+          { "icon": "🏃", "title": "Running & Endurance", "description": "Structured plans for 5K to marathon, with VO2 testing and pace coaching.", "tag": "Popular" },
+          { "icon": "🥊", "title": "Boxing & Combat", "description": "Footwork, power and conditioning in high-energy small-group classes.", "tag": "Intense" },
+          { "icon": "🏋️", "title": "Strength & Power", "description": "Periodized lifting programs that translate directly to the field.", "tag": "Pro" },
+          { "icon": "🧊", "title": "Recovery Lab", "description": "Cryotherapy, compression and physio so you come back stronger, faster.", "tag": "Included" },
+          { "icon": "🥗", "title": "Performance Nutrition", "description": "Personalized fueling plans designed with certified sports nutritionists.", "tag": "1-on-1" }
+        ]
+      }
+    },
+    {
+      "id": "blk_slider_01",
+      "type": "slider",
+      "props": {
+        "slides": [
+          { "image": "/highlights-1.jpg", "caption": "Match highlights — this block type is intentionally not implemented." }
+        ]
+      }
+    },
+    {
+      "id": "blk_pricing_01",
+      "type": "pricing",
+      "props": {
+        "eyebrow": "Membership",
+        "title": "Pick your level",
+        "subtitle": "No contracts. Pause or cancel anytime. Your first session is always free.",
+        "plans": [
+          {
+            "name": "Rookie",
+            "price": "$19",
+            "period": "/month",
+            "description": "Get moving and build the habit.",
+            "features": ["Gym floor access", "2 group classes / week", "Community events"],
+            "cta": { "label": "Start as Rookie", "href": "#join" }
+          },
+          {
+            "name": "Pro",
+            "price": "$49",
+            "period": "/month",
+            "description": "For athletes chasing real results.",
+            "features": ["Unlimited classes", "All 8 disciplines", "Monthly performance testing", "Recovery Lab access"],
+            "cta": { "label": "Go Pro", "href": "#join" },
+            "highlighted": true
+          },
+          {
+            "name": "Elite",
+            "price": "$99",
+            "period": "/month",
+            "description": "Full support, like the pros get.",
+            "features": ["Everything in Pro", "1-on-1 coaching", "Nutrition plan", "Priority court booking"],
+            "cta": { "label": "Become Elite", "href": "#join" }
+          }
+        ]
+      }
+    },
+    {
+      "id": "blk_testimonials_01",
+      "type": "testimonials",
+      "props": {
+        "eyebrow": "Athletes",
+        "title": "Results speak louder",
+        "items": [
+          { "quote": "I cut four minutes off my half-marathon in one season. The coaching here is on another level.", "author": "Camila Rojas", "role": "Half-marathon runner", "rating": 5 },
+          { "quote": "The academy got me match-ready. Two months later I signed with a semi-pro club.", "author": "Diego Morales", "role": "Midfielder", "rating": 5 },
+          { "quote": "Boxing classes at 6am are the best part of my day. The energy is unreal.", "author": "Sofía Herrera", "role": "Amateur boxer", "rating": 4 }
+        ]
+      }
+    },
+    {
+      "id": "blk_faq_01",
+      "type": "faq",
+      "props": {
+        "eyebrow": "FAQ",
+        "title": "Before you lace up",
+        "subtitle": "Still have questions? Our coaches are on the floor every day.",
+        "items": [
+          { "question": "Do I need experience to join?", "answer": "Not at all. Every program has beginner tracks, and coaches scale each session to your level." },
+          { "question": "Can I try before I commit?", "answer": "Yes — your first session is free on every plan. Just book it from the app." },
+          { "question": "Can I switch or pause my membership?", "answer": "Anytime. Upgrades are instant and pauses can last up to three months per year." }
+        ]
+      }
+    },
+    {
+      "id": "blk_cta_01",
+      "type": "ctaBanner",
+      "props": {
+        "title": "Your first session is on us",
+        "description": "Show up, sweat, and see why 12,000 athletes call Velocity home.",
+        "cta": { "label": "Book free session", "href": "#pricing" }
+      }
+    }
+  ]
+}
