@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, typecheck & tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+
+  docker:
+    name: Docker build & smoke test
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image and start the stack
+        run: docker compose up --build -d
+
+      - name: Wait for the container healthcheck
+        run: |
+          for i in $(seq 1 60); do
+            status=$(docker inspect -f '{{.State.Health.Status}}' dynamic-page-renderer)
+            echo "attempt $i: $status"
+            [ "$status" = "healthy" ] && exit 0
+            sleep 2
+          done
+          echo "Container never became healthy" && exit 1
+
+      - name: Smoke test the running app
+        run: |
+          set -e
+          curl -fsS http://localhost:3000/ | grep -q "Train like a pro"
+          echo "✓ / renders the CMS page"
+          curl -fsS http://localhost:3000/editor > /dev/null
+          echo "✓ /editor responds"
+          curl -fsS http://localhost:3000/api/page | grep -q '"slug":"home"'
+          echo "✓ GET /api/page returns the page"
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X PUT \
+            -H 'content-type: application/json' -d '{}' http://localhost:3000/api/page)
+          [ "$code" = "403" ]
+          echo "✓ PUT /api/page is read-only in production (403)"
+
+      - name: Image size
+        run: docker image ls dynamic-page-renderer
+
+      - name: Container logs
+        if: always()
+        run: docker compose logs
+
+      - name: Tear down
+        if: always()
+        run: docker compose down

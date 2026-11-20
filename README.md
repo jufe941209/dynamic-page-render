@@ -1,5 +1,7 @@
 # Dynamic Page Renderer: Velocity Sports Club
 
+[![CI](https://github.com/jufe941209/dynamic-page-render/actions/workflows/ci.yml/badge.svg)](https://github.com/jufe941209/dynamic-page-render/actions/workflows/ci.yml)
+
 A Next.js (App Router) landing page that is assembled at runtime from a mocked **Headless CMS** response,
 plus a **CMS-style visual editor** for changing that JSON with a live preview.
 
@@ -18,7 +20,7 @@ Unknown or broken blocks never crash the page.
 | Hardcoded `data.json` mimicking a Headless CMS | [`data/data.json`](data/data.json) |
 | `PageBuilder` that iterates the array and renders the right component | [`components/page-builder/PageBuilder.tsx`](components/page-builder/PageBuilder.tsx) |
 | AI-generated unit tests for an **Unknown Component Type** (app must not crash) | [`components/page-builder/__tests__/PageBuilder.test.tsx`](components/page-builder/__tests__/PageBuilder.test.tsx) |
-| Dockerfile + docker compose | [`Dockerfile`](Dockerfile), [`docker-compose.yml`](docker-compose.yml) |
+| Dockerfile + docker compose | [`Dockerfile`](Dockerfile), [`docker-compose.yml`](docker-compose.yml), verified on every push by [CI](.github/workflows/ci.yml) |
 | Prompt Log | [`PROMPT_LOG.md`](PROMPT_LOG.md) |
 | Video of the local environment | [`docs/demo.mp4`](docs/demo.mp4) |
 
@@ -41,6 +43,15 @@ npm run lint
 # Docker (the test suite runs during the image build)
 docker compose up --build   # http://localhost:3000
 ```
+
+### Docker without a local Docker install
+
+- **CI:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs lint, typecheck and tests on every
+  push. It then builds the image with `docker compose`, waits for the container `HEALTHCHECK` and
+  smoke-tests `/`, `/editor`, `GET /api/page`, and that `PUT /api/page` is read-only (403) in production.
+- **GitHub Codespaces:** the repo ships a [dev container](.devcontainer/devcontainer.json) with
+  Docker-in-Docker. Use *Code → Codespaces → Create codespace on main*, then run
+  `docker compose up --build`. Port 3000 opens automatically.
 
 ## Routes
 
